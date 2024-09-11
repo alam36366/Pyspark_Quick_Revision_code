@@ -1,0 +1,1 @@
+Data Engineer with 5 years of experience in designing and optimizing scalable data pipelines. Proven track record in reducing data processing time by 70% and enhancing data quality. Expertise in PySpark, SQL, Azure and Databricks. Strong problem-solving skills with a focus on data-driven innovation and efficiency.
