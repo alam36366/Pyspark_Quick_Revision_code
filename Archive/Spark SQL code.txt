@@ -1,0 +1,146 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, expr, when, lit, udf, array, explode
+from pyspark.sql.types import IntegerType, StringType, StructType, StructField, FloatType, ArrayType
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("PySparkExamples").getOrCreate()
+
+# Sample data creation
+data = [
+    (1, "one", "2021-01-01", 1.0),
+    (2, "two", "2021-01-02", 2.5),
+    (3, "three", "2021-01-03", 3.5),
+    (4, "four", "2021-01-04", None),
+    (5, "five", "2021-01-05", 5.0)
+]
+
+schema = StructType([
+    StructField("A", IntegerType(), True),
+    StructField("B", StringType(), True),
+    StructField("C", StringType(), True),
+    StructField("D", FloatType(), True)
+])
+
+df = spark.createDataFrame(data, schema)
+print("Initial DataFrame:")
+df.show()
+
+# Registering DataFrame as a SQL temporary view
+df.createOrReplaceTempView("data_table")
+
+# Running SQL queries
+print("\nRunning SQL query to select specific columns:")
+spark.sql("SELECT A, B FROM data_table").show()
+
+print("\nRunning SQL query to filter rows where A > 2:")
+spark.sql("SELECT * FROM data_table WHERE A > 2").show()
+
+# SQL functions
+print("\nRunning SQL query with aggregation:")
+spark.sql("SELECT B, AVG(A) as avg_A, SUM(D) as sum_D FROM data_table GROUP BY B").show()
+
+# Creating a global temporary view
+df.createOrReplaceGlobalTempView("global_data_table")
+
+print("\nRunning SQL query on global temporary view:")
+spark.sql("SELECT * FROM global_temp.global_data_table WHERE A > 2").show()
+
+# Using SQL to create and manipulate data
+print("\nCreating a new DataFrame using SQL:")
+spark.sql("""
+    CREATE OR REPLACE TEMP VIEW new_table AS
+    SELECT A, B, C, D, (A + D) as E, 
+           CASE WHEN A > 2 THEN 'High' ELSE 'Low' END as F 
+    FROM data_table
+""")
+spark.sql("SELECT * FROM new_table").show()
+
+# Window functions with SQL
+print("\nUsing window functions with SQL:")
+spark.sql("""
+    SELECT A, B, C, D, 
+           ROW_NUMBER() OVER (PARTITION BY B ORDER BY A) as row_number
+    FROM data_table
+""").show()
+
+# Joins with SQL
+data2 = [
+    ("one", 10),
+    ("two", 20),
+    ("three", 30),
+    ("four", 40),
+    ("five", 50)
+]
+
+schema2 = StructType([
+    StructField("key", StringType(), True),
+    StructField("value", IntegerType(), True)
+])
+
+df2 = spark.createDataFrame(data2, schema2)
+df2.createOrReplaceTempView("data_table2")
+
+print("\nJoining DataFrames with SQL:")
+spark.sql("""
+    SELECT a.*, b.value
+    FROM data_table a
+    LEFT JOIN data_table2 b
+    ON a.B = b.key
+""").show()
+
+# Pivoting with SQL
+print("\nCreating a pivot table with SQL:")
+spark.sql("""
+    SELECT B, C, SUM(A) as sum_A
+    FROM data_table
+    GROUP BY B, C
+    PIVOT (SUM(A) FOR C IN ('2021-01-01', '2021-01-02', '2021-01-03', '2021-01-04', '2021-01-05'))
+""").show()
+
+# Using SQL for sorting
+print("\nSorting data with SQL:")
+spark.sql("SELECT * FROM data_table ORDER BY A").show()
+
+# Using UDFs with SQL
+def multiply_by_two(x):
+    return x * 2
+
+multiply_by_two_udf = udf(multiply_by_two, IntegerType())
+spark.udf.register("multiply_by_two_udf", multiply_by_two_udf)
+
+print("\nApplying a UDF with SQL:")
+spark.sql("SELECT A, multiply_by_two_udf(A) as G FROM data_table").show()
+
+# Complex operations with SQL
+print("\nExploding an array column with SQL:")
+df_with_array = df.withColumn("array_col", array("A", "D"))
+df_with_array.createOrReplaceTempView("data_table_with_array")
+spark.sql("""
+    SELECT B, EXPLODE(array_col) as exploded_col
+    FROM data_table_with_array
+""").show()
+
+# Handling dates with SQL
+print("\nConverting string to date with SQL:")
+spark.sql("SELECT A, B, C, CAST(C as DATE) as C_date FROM data_table").show()
+
+print("\nExtracting year and month from date with SQL:")
+spark.sql("""
+    SELECT A, B, C, 
+           YEAR(CAST(C as DATE)) as year, 
+           MONTH(CAST(C as DATE)) as month
+    FROM data_table
+""").show()
+
+# SQL Caching
+print("\nCaching table with SQL:")
+spark.sql("CACHE TABLE data_table")
+spark.sql("SELECT * FROM data_table").show()
+
+# Unpersisting SQL Cache
+print("\nUnpersisting table with SQL:")
+spark.sql("UNCACHE TABLE data_table")
+spark.sql("SELECT * FROM data_table").show()
+
+# Stopping Spark session
+spark.stop()

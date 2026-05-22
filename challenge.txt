@@ -1,0 +1,19 @@
+event_time,user_id,session_id,event_type,product_id,category,price,quantity,country,device,referrer,latency_ms
+2026-04-01 10:15:23,101,abc123,page_view,,home,,,"US","mobile","google",120
+2026-04-01 10:15:25,101,abc123,click,,home,,,"US","mobile","google",45
+2026-04-01 10:16:01,102,def456,purchase,P1001,tools,250.75,1,"US","desktop","email_campaign",200
+2026-04-01 10:16:05,103,ghi789,page_view,P2002,hardware,,,"IN","mobile","direct",180
+2026-04-01 10:17:10,104,jkl012,search,,search,,,"IN","desktop","google",89
+2026-04-01 10:18:22,105,mno345,add_to_cart,P3003,plumbing,99.99,2,"UK","tablet","ad_campaign",150
+2026-04-01 10:19:00,,pqr678,page_view,,home,,,"US","mobile","google",150
+2026-04-01 10:20:00,106,stu901,purchase,P4004,electrical,INVALID,1,"US","desktop","email_campaign",220
+2026-04-01 10:21:00,107,vwx234,checkout,P5005,electrical,180.50,1,"US","mobile","direct",NULL
+2026-04-01 10:22:10,108,yz1234,logout,,account,,,"IN","mobile","direct",12
+2026-04-01 10:23:11,109,aaa111,purchase,P6006,tools,300.00,3,"US","desktop","affiliate",310
+2026-04-01 10:24:45,110,bbb222,add_to_cart,P7007,plumbing,75.25,1,"CA","mobile","google",140
+2026-04-01 10:25:30,111,ccc333,page_view,,home,,,"US","tablet","direct",95
+2026-04-01 10:26:10,112,ddd444,purchase,P8008,hardware,500.00,1,"IN","desktop","email_campaign",400
+2026-04-01 10:27:55,113,eee555,purchase,P9009,hardware,NaN,2,"IN","mobile","google",210
+2026-04-01 10:28:40,114,fff666,click,,home,,,"US","mobile","google",30
+2026-04-01 10:29:15,115,ggg777,add_to_cart,P1111,tools,120.00,1,"UK","desktop","ad_campaign",175
+2026-04-01 10:30:05,116,hhh888,checkout,P2222,plumbing,220.00,1,"CA","tablet","direct",260
